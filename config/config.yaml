@@ -1,0 +1,48 @@
+# Bug Bounty Automation Config
+# Edit these before each engagement
+
+output_dir: "output"
+scope_file: "config/scope.txt"
+
+nmap:
+  flags: "-sV -sC -T4 --open"          # Service detection + default scripts
+  ports: "80,443,8080,8443,8000,8888,3000,3001,5000,5001,9000,9090"
+  full_scan_flags: "-p- -sV -T4 --open" # Uncomment in run_tests.py to use
+
+ffuf:
+  wordlist: "wordlists/common.txt"
+  extensions: "php,html,js,json,asp,aspx,txt,xml,bak,old,zip,tar.gz,env,config,yml,yaml"
+  threads: 40
+  timeout: 10
+  rate_limit: 100                        # Requests per second — keep this reasonable
+  match_codes: "200,201,204,301,302,307,401,403"
+
+gobuster:
+  wordlist: "wordlists/common.txt"
+  threads: 30
+  timeout: "10s"
+
+nuclei:
+  templates:
+    - "cves"
+    - "exposures"
+    - "misconfiguration"
+    - "takeovers"
+    - "technologies"
+    - "vulnerabilities"
+    - "default-logins"
+    - "exposed-panels"
+    - "fuzzing"
+  severity: "low,medium,high,critical"
+  rate_limit: 50
+  bulk_size: 25
+  concurrency: 10
+
+burp:
+  # Burp Suite Pro REST API (requires Burp Suite Pro with API enabled)
+  # Enable via: Extender > APIs > Enable Burp Suite REST API
+  api_url: "http://127.0.0.1:1337"
+  api_key: ""                            # Set your Burp API key here
+  scan_config: "Crawl and Audit - Balanced"
+
+# Manual testing checklist is generated in output/reports/manual_checklist.md

@@ -1,0 +1,8 @@
+# Bug Bounty Scope - one target per line
+# Formats accepted: domain.com, sub.domain.com, https://api.domain.com, 10.0.0.1, 10.0.0.0/24
+# Lines starting with # are ignored
+#
+# EXAMPLE (replace with your actual scope):
+# example.com
+# api.example.com
+# staging.example.com
