@@ -41,9 +41,21 @@ def run_data_ingestion():
     return clean_data
 
 
+def run_strategy(price_data):
+    logger.info("=== Component 2: Strategy Engine ===")
+    from agent.strategy.composer import decide_all
+    decisions = decide_all(price_data)
+    for d in decisions:
+        logger.info(f"{d.ticker}: {d.action} (score={d.score:+.3f}) "
+                    f"[{', '.join(s.source + '→' + s.action for s in d.contributions)}]")
+    return decisions
+
+
 if __name__ == "__main__":
     data = run_data_ingestion()
+    decisions = run_strategy(data)
 
-    for ticker, df in list(data.items())[:3]:
-        print(f"\n--- {ticker} (last 3 rows) ---")
-        print(df[["Open", "High", "Low", "Close", "Volume"]].tail(3).to_string())
+    buys = [d for d in decisions if d.action == "BUY"]
+    sells = [d for d in decisions if d.action == "SELL"]
+    print(f"\n=== Summary: {len(buys)} BUY | {len(sells)} SELL | "
+          f"{len(decisions) - len(buys) - len(sells)} HOLD ===")
