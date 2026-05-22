@@ -51,11 +51,29 @@ def run_strategy(price_data):
     return decisions
 
 
+def run_risk(decisions, price_data, portfolio_value=100_000):
+    logger.info("=== Component 3: Risk Manager ===")
+    from agent.risk.manager import process_all
+    from agent.data.mock import mock_fundamentals
+
+    fundamentals = {t: mock_fundamentals(t) for t in price_data} if USE_MOCK else {}
+    orders = process_all(
+        decisions=decisions,
+        price_data=price_data,
+        portfolio_value=portfolio_value,
+        current_positions={},   # empty — no existing positions at start
+        fundamentals=fundamentals,
+    )
+    return orders
+
+
 if __name__ == "__main__":
     data = run_data_ingestion()
     decisions = run_strategy(data)
+    orders = run_risk(decisions, data)
 
     buys = [d for d in decisions if d.action == "BUY"]
     sells = [d for d in decisions if d.action == "SELL"]
-    print(f"\n=== Summary: {len(buys)} BUY | {len(sells)} SELL | "
+    print(f"\n=== Strategy: {len(buys)} BUY | {len(sells)} SELL | "
           f"{len(decisions) - len(buys) - len(sells)} HOLD ===")
+    print(f"=== Risk-approved orders: {len(orders)} ===")
