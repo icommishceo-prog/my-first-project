@@ -51,7 +51,7 @@ def run_strategy(price_data):
     return decisions
 
 
-def run_risk(decisions, price_data, portfolio_value=100_000):
+def run_risk(decisions, price_data, portfolio_value=100_000, current_positions=None):
     logger.info("=== Component 3: Risk Manager ===")
     from agent.risk.manager import process_all
     from agent.data.mock import mock_fundamentals
@@ -61,19 +61,34 @@ def run_risk(decisions, price_data, portfolio_value=100_000):
         decisions=decisions,
         price_data=price_data,
         portfolio_value=portfolio_value,
-        current_positions={},   # empty — no existing positions at start
+        current_positions=current_positions or {},
         fundamentals=fundamentals,
     )
-    return orders
+    return orders, fundamentals
+
+
+def run_execution(orders, price_data, fundamentals, dry_run=True):
+    from agent.execution.executor import execute
+    from agent.execution.fill_tracker import PositionState
+    fills, state = execute(
+        orders=orders,
+        position_state=PositionState(),
+        price_data=price_data,
+        fundamentals=fundamentals,
+        dry_run=dry_run,
+    )
+    return fills, state
 
 
 if __name__ == "__main__":
     data = run_data_ingestion()
     decisions = run_strategy(data)
-    orders = run_risk(decisions, data)
+    orders, fundamentals = run_risk(decisions, data)
+    fills, position_state = run_execution(orders, data, fundamentals, dry_run=True)
 
     buys = [d for d in decisions if d.action == "BUY"]
     sells = [d for d in decisions if d.action == "SELL"]
-    print(f"\n=== Strategy: {len(buys)} BUY | {len(sells)} SELL | "
+    print(f"\n=== Strategy : {len(buys)} BUY | {len(sells)} SELL | "
           f"{len(decisions) - len(buys) - len(sells)} HOLD ===")
-    print(f"=== Risk-approved orders: {len(orders)} ===")
+    print(f"=== Risk orders approved : {len(orders)} ===")
+    print(f"=== Execution fills confirmed : {sum(1 for f in fills if f.status == 'filled')} ===")
