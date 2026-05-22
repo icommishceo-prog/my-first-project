@@ -12,12 +12,12 @@ from config import WATCHLIST, DEFAULT_PERIOD, DEFAULT_INTERVAL
 USE_MOCK = "--mock" in sys.argv
 SCHEDULE = "--schedule" in sys.argv
 
-# Ledger and position state persist across cycles when running scheduled
+from agent.monitoring.persistence import load_ledger, save_ledger
 from agent.monitoring.pnl import PortfolioLedger
 from agent.execution.fill_tracker import PositionState
 
 PORTFOLIO_VALUE = 100_000.0
-_ledger = PortfolioLedger(starting_cash=PORTFOLIO_VALUE, cash=PORTFOLIO_VALUE)
+_ledger = load_ledger(starting_cash=PORTFOLIO_VALUE)   # restores from disk if available
 _position_state = PositionState()
 
 
@@ -43,13 +43,13 @@ def run_data_ingestion():
     return clean_data, fundamentals
 
 
-def run_strategy(price_data, ledger: PortfolioLedger):
+def run_strategy(price_data, fundamentals, ledger):
     logger.info("=== Component 2: Strategy Engine + Stop Enforcer ===")
     from agent.strategy.composer import decide_all
     from agent.monitoring.stop_enforcer import check_stops
 
     stop_sells = check_stops(ledger, price_data)
-    signal_decisions = decide_all(price_data)
+    signal_decisions = decide_all(price_data, fundamentals=fundamentals)
 
     # Stop-enforcer SELLs override any signal on the same ticker
     stop_tickers = {d.ticker for d in stop_sells}
@@ -98,6 +98,7 @@ def run_monitoring(ledger, price_data, decisions, orders, fills):
     from agent.monitoring.digest import render
 
     # Apply fills to ledger
+    changed = False
     for fill in fills:
         if fill.status != "filled":
             continue
@@ -110,6 +111,10 @@ def run_monitoring(ledger, price_data, decisions, orders, fills):
             ledger.open(fill.ticker, fill.shares, price, stop, sector)
         elif fill.action == "SELL":
             ledger.close(fill.ticker, price, reason="signal/stop")
+        changed = True
+
+    if changed:
+        save_ledger(ledger)   # persist after every fill
 
     report = render(ledger, price_data, decisions, orders, fills)
     print(report)
@@ -118,7 +123,7 @@ def run_monitoring(ledger, price_data, decisions, orders, fills):
 
 def run_full_cycle():
     data, fundamentals = run_data_ingestion()
-    decisions = run_strategy(data, _ledger)
+    decisions = run_strategy(data, fundamentals, _ledger)
     orders = run_risk(decisions, data, fundamentals, _ledger)
     fills = run_execution(orders, data, fundamentals, dry_run=True)
     run_monitoring(_ledger, data, decisions, orders, fills)

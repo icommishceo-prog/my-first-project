@@ -19,20 +19,32 @@ class Decision:
     contributions: list[Signal]
 
 
-# Default ensemble — equal-weighted trend + mean-reversion + momentum
+# Default ensemble — technical (80%) + fundamental quality screen (20%)
 DEFAULT_GENERATORS: list[tuple[Callable, float]] = [
-    (sma_crossover_signal, 0.4),  # trend filter — Buffett's "stay with the trend"
-    (rsi_signal, 0.3),            # mean reversion — Simons
-    (macd_signal, 0.3),           # momentum confirmation
+    (sma_crossover_signal, 0.35),  # trend filter — Buffett's "stay with the trend"
+    (rsi_signal, 0.25),            # mean reversion — Simons
+    (macd_signal, 0.25),           # momentum confirmation
+    # fundamental_signal injected at runtime (needs per-ticker fundamentals dict)
 ]
 
 BUY_THRESHOLD = 0.35
 SELL_THRESHOLD = -0.35
 
 
-def decide(ticker: str, df: pd.DataFrame, generators=DEFAULT_GENERATORS) -> Decision:
+def decide(
+    ticker: str,
+    df: pd.DataFrame,
+    generators=DEFAULT_GENERATORS,
+    fundamentals: dict | None = None,
+) -> Decision:
     """Run all generators on one ticker, combine into a single Decision."""
     signals = [(gen(ticker, df), weight) for gen, weight in generators]
+
+    # Inject fundamental signal if fundamentals provided
+    if fundamentals:
+        from agent.strategy.fundamental_signal import fundamental_signal
+        sig = fundamental_signal(ticker, fundamentals.get(ticker, {}))
+        signals.append((sig, 0.15))
 
     score = 0.0
     for sig, weight in signals:
@@ -51,6 +63,9 @@ def decide(ticker: str, df: pd.DataFrame, generators=DEFAULT_GENERATORS) -> Deci
     return Decision(ticker, action, round(score, 3), [s for s, _ in signals])
 
 
-def decide_all(price_data: dict[str, pd.DataFrame]) -> list[Decision]:
+def decide_all(
+    price_data: dict[str, pd.DataFrame],
+    fundamentals: dict | None = None,
+) -> list[Decision]:
     """Run the ensemble across every ticker in the cleaned watchlist data."""
-    return [decide(ticker, df) for ticker, df in price_data.items()]
+    return [decide(ticker, df, fundamentals=fundamentals) for ticker, df in price_data.items()]
