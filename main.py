@@ -96,8 +96,9 @@ def run_execution(orders, price_data, fundamentals, dry_run=True):
 def run_monitoring(ledger, price_data, decisions, orders, fills):
     logger.info("=== Component 5: Monitoring ===")
     from agent.monitoring.digest import render
+    from agent.monitoring.slack import alert_fill, alert_stop_triggered, alert_daily_digest
 
-    # Apply fills to ledger
+    # Apply fills to ledger + fire per-fill Slack alerts
     changed = False
     for fill in fills:
         if fill.status != "filled":
@@ -105,16 +106,49 @@ def run_monitoring(ledger, price_data, decisions, orders, fills):
         df = price_data.get(fill.ticker)
         price = float(df["Close"].iloc[-1]) if df is not None else 0.0
         sector = _position_state.positions.get(fill.ticker, {}).get("sector", "Unknown")
+        matching_order = next((o for o in orders if o.ticker == fill.ticker), None)
+
         if fill.action == "BUY":
-            matching_order = next((o for o in orders if o.ticker == fill.ticker), None)
             stop = matching_order.stop_price if matching_order else 0.0
+            kelly = matching_order.kelly_fraction if matching_order else 0.0
             ledger.open(fill.ticker, fill.shares, price, stop, sector)
+            alert_fill(fill.ticker, "BUY", fill.shares, price, stop, kelly)
+
         elif fill.action == "SELL":
-            ledger.close(fill.ticker, price, reason="signal/stop")
+            # Check if this was a stop-triggered exit
+            is_stop = any(
+                s.source == "stop_enforcer"
+                for d in decisions if d.ticker == fill.ticker
+                for s in d.contributions
+            )
+            pos = ledger.open_positions.get(fill.ticker, {})
+            est_pnl = (price - pos.get("avg_entry", price)) * pos.get("shares", 0)
+            if is_stop:
+                alert_stop_triggered(fill.ticker, price, fill.stop_price, est_pnl)
+            else:
+                alert_fill(fill.ticker, "SELL", fill.shares, price, 0.0, 0.0)
+            ledger.close(fill.ticker, price, reason="stop" if is_stop else "signal")
+
         changed = True
 
     if changed:
-        save_ledger(ledger)   # persist after every fill
+        save_ledger(ledger)
+
+    # End-of-cycle digest alert
+    mtm = ledger.mark_to_market(price_data)
+    alert_daily_digest(
+        portfolio_value=ledger.total_value(price_data),
+        cash=ledger.cash,
+        realized_pnl=ledger.realized_pnl,
+        total_return_pct=ledger.total_return_pct(price_data),
+        open_positions=[{
+            "ticker": p.ticker, "shares": p.shares,
+            "unrealized_pnl": p.unrealized_pnl, "unrealized_pct": p.unrealized_pct,
+        } for p in mtm],
+        buys=[d.ticker for d in decisions if d.action == "BUY"],
+        sells=[d.ticker for d in decisions if d.action == "SELL"],
+        fills_count=sum(1 for f in fills if f.status == "filled"),
+    )
 
     report = render(ledger, price_data, decisions, orders, fills)
     print(report)

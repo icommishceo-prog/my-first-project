@@ -20,6 +20,9 @@ WATCHLIST = os.getenv("WATCHLIST", "AAPL,MSFT,GOOGL,AMZN,META,NVDA,BRK-B,JPM,UNH
 DEFAULT_PERIOD = "1y"
 DEFAULT_INTERVAL = "1d"
 
+# --- Alerting ---
+SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL", "")
+
 # --- Risk defaults ---
 MAX_POSITION_PCT = 0.05   # max 5% of portfolio per position
 STOP_LOSS_PCT = 0.08      # 8% hard stop-loss per position
