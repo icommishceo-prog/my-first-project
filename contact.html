@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact | Jett Medical Company</title>
+  <meta name="description" content="Contact Jett Medical Company in Bessemer, Alabama for medical supplies, mobility equipment, in-home setup, and repairs." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-mark" aria-hidden="true">+</span>
+        <span class="logo-text">Jett Medical</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" id="site-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="contact.html" class="active">Contact</a>
+        <a href="contact.html" class="btn btn-primary nav-cta">Get in Touch</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <p class="eyebrow">Contact</p>
+        <h1>Get in Touch with Jett Medical</h1>
+        <p class="lead">We're here to answer questions about products, pricing, hours, or in-home setup. Reach out using the information below or send us a message.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container two-col">
+        <div class="contact-details">
+          <h2>Visit Our Location</h2>
+          <p class="address-block">
+            <strong>Jett Medical Company</strong><br />
+            1209 Lake Dr SE<br />
+            Bessemer, AL 35022
+          </p>
+
+          <h3>Hours</h3>
+          <p>For current operating hours, please call us or check our profiles on the Better Business Bureau or Yahoo Local.</p>
+
+          <h3>Find Us Online</h3>
+          <ul class="check-list">
+            <li>Better Business Bureau (BBB)</li>
+            <li>CareCredit</li>
+            <li>MapQuest</li>
+            <li>Yahoo Local</li>
+          </ul>
+
+          <p class="note">For specific pricing, current operating hours, or direct contact, please call us through the directories above or send a message using the form.</p>
+        </div>
+
+        <div class="contact-form-wrap">
+          <h2>Send a Message</h2>
+          <form class="contact-form" id="contact-form" novalidate>
+            <label>
+              <span>Full Name</span>
+              <input type="text" name="name" required />
+            </label>
+            <label>
+              <span>Email</span>
+              <input type="email" name="email" required />
+            </label>
+            <label>
+              <span>Phone (optional)</span>
+              <input type="tel" name="phone" />
+            </label>
+            <label>
+              <span>How can we help?</span>
+              <select name="topic">
+                <option>Medical or surgical supplies</option>
+                <option>Mobility equipment</option>
+                <option>In-home setup</option>
+                <option>Repairs and maintenance</option>
+                <option>CareCredit financing</option>
+                <option>Other</option>
+              </select>
+            </label>
+            <label>
+              <span>Message</span>
+              <textarea name="message" rows="5" required></textarea>
+            </label>
+            <button type="submit" class="btn btn-primary btn-lg">Send Message</button>
+            <p class="form-status" id="form-status" role="status"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt">
+      <div class="container">
+        <div class="section-head">
+          <h2>Our Location</h2>
+          <p>Conveniently located in Bessemer, Alabama.</p>
+        </div>
+        <div class="map-wrap">
+          <iframe
+            title="Map of Jett Medical Company"
+            src="https://www.google.com/maps?q=1209+Lake+Dr+SE,+Bessemer,+AL+35022&output=embed"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <div class="logo logo-footer">
+          <span class="logo-mark" aria-hidden="true">+</span>
+          <span class="logo-text">Jett Medical</span>
+        </div>
+        <p>Medical supplies, surgical equipment, and mobility solutions to support post-injury recovery in Bessemer, Alabama and the surrounding area.</p>
+      </div>
+      <div>
+        <h4>Visit</h4>
+        <p>1209 Lake Dr SE<br />Bessemer, AL 35022</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Listed With</h4>
+        <ul class="footer-links">
+          <li>Better Business Bureau</li>
+          <li>CareCredit</li>
+          <li>MapQuest</li>
+          <li>Yahoo Local</li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; <span id="year"></span> Jett Medical Company. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
