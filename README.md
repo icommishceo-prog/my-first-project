@@ -20,6 +20,8 @@ You get the nostalgia without the security disaster.
 - A lightweight **XFCE** desktop skinned to look like Windows XP "Luna".
 - A curated, open-source **OSINT toolkit** (recon, username/email enumeration,
   metadata, subdomain discovery, etc.) — see [`docs/tools.md`](docs/tools.md).
+- **Firefox ESR** pre-loaded with an OSINT bookmarks toolbar and privacy
+  hardening via enterprise policy.
 - Two ways to use it:
   1. **Build a bootable live ISO** (run it in a VM or off a USB) — [`build/`](build/)
   2. **Provision an existing Debian/Ubuntu VM** in place — [`provision/`](provision/)
@@ -55,6 +57,13 @@ This project is for **learning and personal OSINT research**. OSINT means
 Read [`docs/opsec.md`](docs/opsec.md) before you start: only investigate targets
 you're authorized to, respect local law and platform terms of service, and don't
 use these tools to harass, stalk, or dox anyone.
+
+## CI
+
+A GitHub Actions workflow ([`.github/workflows/ci.yml`](.github/workflows/ci.yml))
+runs ShellCheck on the scripts, validates the XFCE XML and Firefox JSON, checks
+the package lists, and validates the live-build config (`BLISS_CONFIG_ONLY=1`)
+without doing the heavyweight full ISO build.
 
 ## Status
 

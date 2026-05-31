@@ -74,6 +74,27 @@ install_pipx_tools() {
   done
 }
 
+install_go_tools() {
+  mapfile -t gotools < <(read_list "${PROVISION_DIR}/packages.go")
+  [ "${#gotools[@]}" -gt 0 ] || return 0
+
+  if ! command -v go >/dev/null 2>&1; then
+    warn "Go toolchain not found; skipping Go OSINT tools (e.g. amass)."
+    warn "  Install Go and re-run, or grab amass via snap: 'snap install amass'."
+    return 0
+  fi
+
+  log "Installing Go OSINT tools..."
+  local run_as=()
+  [ -n "${TARGET_USER}" ] && run_as=(sudo -u "${TARGET_USER}" -H)
+  for g in "${gotools[@]}"; do
+    log "  go install ${g}"
+    # Land binaries on a system-wide PATH location.
+    "${run_as[@]}" env GOBIN=/usr/local/bin go install "${g}" \
+      || warn "go install failed for '${g}' (continuing)."
+  done
+}
+
 apply_theme() {
   log "Applying XP-style desktop theme..."
   if [ -x "${THEME_DIR}/install-theme.sh" ]; then
@@ -86,6 +107,7 @@ apply_theme() {
 main() {
   install_apt_packages
   install_pipx_tools
+  install_go_tools
   apply_theme
   log "Done. Log out and back in (or reboot) to get the Windows XP look."
   log "Read docs/opsec.md before you start investigating anything."

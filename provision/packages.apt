@@ -1,5 +1,10 @@
 # Debian/Ubuntu packages installed by provision.sh and baked into the ISO.
 # One package per line. Lines starting with '#' and blank lines are ignored.
+#
+# NOTE: Only packages actually present in Debian 12 (bookworm) main/contrib are
+# listed here. OSINT tools that are NOT in Debian (theHarvester, recon-ng) are
+# installed via pipx instead (see packages.pipx); amass is a Go tool (see
+# packages.go). The provisioner skips any package unavailable in your release.
 
 # --- Desktop / theming base ---
 xfce4
@@ -11,6 +16,7 @@ fonts-liberation
 papirus-icon-theme
 gtk2-engines-murrine
 arc-theme
+imagemagick
 
 # --- Core utilities ---
 git
@@ -19,16 +25,14 @@ wget
 ca-certificates
 unzip
 jq
+xmlstarlet
 python3
 python3-pip
 python3-venv
 pipx
 
-# --- OSINT: apt-provided ---
-theharvester
-recon-ng
+# --- OSINT: genuinely in Debian repos ---
 dnsrecon
-amass
 whois
-dnsutils
+bind9-dnsutils
 libimage-exiftool-perl

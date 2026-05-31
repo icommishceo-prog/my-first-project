@@ -66,6 +66,33 @@ install_wallpaper() {
   fi
 }
 
+install_firefox_policies() {
+  # Deploy OSINT bookmarks + privacy hardening via Firefox enterprise policies.
+  # Different Firefox builds read different system paths, so cover the common
+  # ones (firefox-esr on Debian, plain firefox, and the generic /etc path).
+  local src="${THEME_DIR}/firefox/policies.json"
+  [ -f "${src}" ] || { warn "No Firefox policies at ${src}; skipping bookmarks."; return 0; }
+
+  local installed=0
+  for dir in /etc/firefox/policies \
+             /etc/firefox-esr/policies \
+             /usr/lib/firefox-esr/distribution \
+             /usr/lib/firefox/distribution; do
+    # Only target dirs whose parent exists (i.e. that browser flavor is present),
+    # except /etc/firefox which we always create as the modern standard path.
+    if [ "${dir}" = "/etc/firefox/policies" ] || [ -d "$(dirname "${dir}")" ]; then
+      mkdir -p "${dir}"
+      cp "${src}" "${dir}/policies.json"
+      installed=1
+    fi
+  done
+  if [ "${installed}" -eq 1 ]; then
+    log "Installed Firefox OSINT bookmarks + privacy policy."
+  else
+    warn "Could not place Firefox policies anywhere."
+  fi
+}
+
 seed_xfce_config() {
   # Copy the XFCE config tree into a home directory's ~/.config.
   local home_dir="$1"
@@ -100,6 +127,7 @@ main() {
   [ "$(id -u)" -eq 0 ] || { warn "Run as root for system-wide theme install."; }
   install_gtk_theme
   install_wallpaper
+  install_firefox_policies
   apply_to_users
   log "Theme applied. Set GTK theme '${XP_GTK_THEME_NAME}' + Papirus icons via"
   log "Settings > Appearance if it isn't picked up automatically."

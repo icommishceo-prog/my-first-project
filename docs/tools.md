@@ -4,13 +4,19 @@ All open-source, all installed by the provisioning script / ISO build. Grouped
 by what they do. Every one of these works with **public** data — read
 [`opsec.md`](opsec.md) for the rules of engagement.
 
+> **Install source legend.** `apt` = in Debian 12 repos. `pipx` = Python tool,
+> not in Debian, installed in an isolated venv. `go` = Go tool, installed with
+> `go install` only if a Go toolchain is present. Verified against Debian 12
+> (bookworm) — theHarvester, recon-ng and amass are **not** Debian packages, so
+> they come from pipx/go rather than apt.
+
 ## Recon frameworks
 
 | Tool | Purpose | Install source |
 |------|---------|----------------|
 | SpiderFoot | Automated OSINT collection + correlation, web UI | pipx |
-| recon-ng | Modular web recon framework | apt / pipx |
-| theHarvester | Emails, subdomains, hosts, names from public sources | apt / pipx |
+| recon-ng | Modular web recon framework | pipx |
+| theHarvester | Emails, subdomains, hosts, names from public sources | pipx |
 
 ## Username / email / people
 
@@ -24,9 +30,9 @@ by what they do. Every one of these works with **public** data — read
 
 | Tool | Purpose | Install source |
 |------|---------|----------------|
-| Amass | In-depth attack-surface / subdomain mapping | apt |
+| Amass | In-depth attack-surface / subdomain mapping | go (or `snap install amass`) |
 | dnsrecon | DNS enumeration | apt |
-| whois / dnsutils | Classic WHOIS + dig/host | apt |
+| whois / bind9-dnsutils | Classic WHOIS + dig/host | apt |
 | Photon | Fast web crawler for OSINT | pipx |
 
 ## Metadata / files / images
@@ -38,8 +44,11 @@ by what they do. Every one of these works with **public** data — read
 
 ## Browser & manual workflow
 
-- **Firefox ESR** with a starter set of OSINT bookmarks (search engines,
-  archives, image search, certificate transparency, etc.).
+- **Firefox ESR**, pre-loaded via enterprise policy
+  ([`theme/firefox/policies.json`](../theme/firefox/policies.json)) with an
+  **OSINT** bookmarks toolbar folder (search engines, archives, reverse image
+  search, certificate transparency, breach lookup, etc.) and privacy hardening
+  (telemetry/Pocket/sponsored content off).
 - Note-taking + screenshot tools for documenting findings.
 
 ## Optional / not bundled (license or footprint reasons)
@@ -47,11 +56,17 @@ by what they do. Every one of these works with **public** data — read
 - **Maltego** — excellent link-analysis tool, but proprietary (free Community
   Edition requires manual download/registration). Install it yourself if you
   want it.
-- **subfinder / amass advanced sources** — many premium data sources need API
-  keys you must register for. The tools are installed; the keys are up to you.
+- **Premium data sources** — many tools (amass, theHarvester, SpiderFoot) can
+  pull from sources that need API keys you must register for. The tools are
+  installed; the keys are up to you. Keys are attributable — see
+  [`opsec.md`](opsec.md).
 
 ## Adding more
 
-Edit [`provision/packages.apt`](../provision/packages.apt) (Debian packages) or
-[`provision/packages.pipx`](../provision/packages.pipx) (Python tools) and
-re-run the provisioner. The ISO build reads the same lists.
+Edit the relevant list and re-run the provisioner (the ISO build reads the same
+lists):
+
+- [`provision/packages.apt`](../provision/packages.apt) — Debian packages
+- [`provision/packages.pipx`](../provision/packages.pipx) — Python tools
+- [`provision/packages.go`](../provision/packages.go) — Go tools (installed only
+  when a Go toolchain is present)

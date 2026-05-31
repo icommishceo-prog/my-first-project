@@ -25,8 +25,11 @@ DIST="${BLISS_DIST:-bookworm}"   # Debian 12
 log()  { printf '\033[1;32m[build]\033[0m %s\n' "$*"; }
 die()  { printf '\033[1;31m[build]\033[0m %s\n' "$*" >&2; exit 1; }
 
-[ "$(id -u)" -eq 0 ] || die "live-build needs root: run with sudo."
 command -v lb >/dev/null 2>&1 || die "live-build not installed. Run: apt-get install live-build"
+
+# BLISS_CONFIG_ONLY=1 prepares + validates the live-build config without doing
+# the (root-only, multi-GB) full build. Used by CI to catch bad flags early.
+CONFIG_ONLY="${BLISS_CONFIG_ONLY:-0}"
 
 strip_list() { sed -e 's/#.*$//' -e 's/[[:space:]]*$//' "$1" | grep -v '^[[:space:]]*$' || true; }
 
@@ -83,14 +86,16 @@ HOOK
 }
 
 run_build() {
+  [ "$(id -u)" -eq 0 ] || die "live-build needs root for the full build: run with sudo."
   log "Running lb build (this takes a while and downloads a lot)..."
   cd "${WORK_DIR}"
   lb build
 
   local iso
-  iso="$(ls "${WORK_DIR}"/*.iso 2>/dev/null | head -n1 || true)"
+  iso="$(find "${WORK_DIR}" -maxdepth 1 -name '*.iso' -print -quit)"
   if [ -n "${iso}" ]; then
-    local out="${BUILD_DIR}/bliss-osint-${DIST}-$(date +%Y%m%d).iso"
+    local out
+    out="${BUILD_DIR}/bliss-osint-${DIST}-$(date +%Y%m%d).iso"
     mv "${iso}" "${out}"
     log "ISO ready: ${out}"
     log "Boot it in a VM (VirtualBox/QEMU) and read docs/opsec.md before use."
@@ -100,4 +105,8 @@ run_build() {
 }
 
 prepare_config
+if [ "${CONFIG_ONLY}" = "1" ]; then
+  log "BLISS_CONFIG_ONLY=1: config prepared and validated; skipping full build."
+  exit 0
+fi
 run_build
