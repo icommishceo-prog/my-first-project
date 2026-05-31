@@ -1,0 +1,12 @@
+# live-build throwaway state and build artifacts
+build/work/
+*.iso
+*.img
+
+# user-supplied wallpaper (don't commit copyrighted art)
+theme/wallpaper/*.png
+theme/wallpaper/*.jpg
+
+# python
+__pycache__/
+*.pyc

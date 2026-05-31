@@ -1,0 +1,10 @@
+# Python OSINT tools installed via pipx (isolated venvs, no system pollution).
+# Format: <pipx-spec>   # optional comment
+# Lines starting with '#' and blank lines are ignored.
+
+sherlock-project        # username search across social networks (provides `sherlock`)
+maigret                 # username enumeration + reporting
+holehe                  # email-to-registered-sites checker
+spiderfoot              # automated OSINT collection with web UI
+photon                  # OSINT-focused web crawler
+metagoofil              # public-document metadata harvester
