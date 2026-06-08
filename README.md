@@ -58,6 +58,19 @@ Read [`docs/opsec.md`](docs/opsec.md) before you start: only investigate targets
 you're authorized to, respect local law and platform terms of service, and don't
 use these tools to harass, stalk, or dox anyone.
 
+## Testing
+
+Validate the toolkit safely against an **invented persona** on RFC 2606 reserved
+domains — no real target:
+
+```bash
+./tests/osint-smoke.sh            # live run on the provisioned VM
+./tests/osint-smoke.sh --check    # offline: tool presence + metadata demo
+```
+
+See [`tests/README.md`](tests/README.md). A clean run mostly returns "not found"
+— that's success.
+
 ## CI
 
 A GitHub Actions workflow ([`.github/workflows/ci.yml`](.github/workflows/ci.yml))
