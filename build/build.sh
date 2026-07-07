@@ -47,11 +47,14 @@ prepare_config() {
     --iso-application "BlissOSINT" \
     --iso-volume "BlissOSINT"
 
-  # --- apt package list baked into the chroot ---
+  # --- apt package list baked into the chroot (core + OSINT + desktop) ---
   mkdir -p config/package-lists
-  strip_list "${PROVISION_DIR}/packages.apt" > config/package-lists/bliss-osint.list.chroot
-  # live-system runtime is required for a bootable live image.
-  printf 'live-boot\nlive-config\nlive-config-systemd\n' >> config/package-lists/bliss-osint.list.chroot
+  {
+    strip_list "${PROVISION_DIR}/packages.apt"
+    strip_list "${PROVISION_DIR}/packages.desktop.apt"
+    # live-system runtime is required for a bootable live image.
+    printf 'live-boot\nlive-config\nlive-config-systemd\n'
+  } > config/package-lists/bliss-osint.list.chroot
 
   # --- bake the repo into the image so hooks can call provisioner pieces ---
   mkdir -p config/includes.chroot/opt/bliss-osint

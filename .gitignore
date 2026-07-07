@@ -7,6 +7,9 @@ build/work/
 theme/wallpaper/*.png
 theme/wallpaper/*.jpg
 
+# vagrant
+.vagrant/
+
 # python
 __pycache__/
 *.pyc

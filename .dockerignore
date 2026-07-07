@@ -1,0 +1,7 @@
+.git
+build/work
+*.iso
+*.img
+theme/wallpaper/*.png
+theme/wallpaper/*.jpg
+**/__pycache__

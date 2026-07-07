@@ -1,0 +1,14 @@
+# Desktop + XP-theming packages, Debian 12 (bookworm).
+# Installed by the FULL provision (and the ISO build), but SKIPPED in headless
+# mode (BLISS_HEADLESS=1) so the Docker toolkit image and CI smoke test stay
+# lean. One package per line; '#' comments and blank lines are ignored.
+
+xfce4
+xfce4-goodies
+xfce4-whiskermenu-plugin
+lightdm
+firefox-esr
+fonts-liberation
+papirus-icon-theme
+gtk2-engines-murrine
+arc-theme

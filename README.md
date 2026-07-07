@@ -27,7 +27,21 @@ You get the nostalgia without the security disaster.
   2. **Provision an existing Debian/Ubuntu VM** in place — [`provision/`](provision/)
 - OPSEC and legal guidance written for learners — [`docs/opsec.md`](docs/opsec.md).
 
-## Quick start (provision a VM — easiest)
+## Ways to run it
+
+Pick the path that fits — fastest to fullest:
+
+| Path | Command | You get |
+|------|---------|---------|
+| **Docker** (tools only) | `docker build -t bliss-osint -f docker/Dockerfile .` then `docker run --rm bliss-osint` | The OSINT toolkit in ~2 min, no desktop — great for trying/testing tools. See [`docker/`](docker/). |
+| **Vagrant VM** (full) | `vagrant up` | A booted, XP-themed workstation. Uses the same provisioner. |
+| **Provision in place** | `sudo ./provision/provision.sh` | Themes + tools onto an existing Debian 12 / Ubuntu 24.04 VM. |
+| **Live ISO** (advanced) | `sudo ./build/build.sh` | A bootable `bliss-osint-*.iso` for USB/VM. See [`build/`](build/). |
+
+The provisioner also has a **headless mode** (`BLISS_HEADLESS=1`) that installs
+the OSINT toolkit without the desktop — that's what the Docker image and CI use.
+
+## Provision a VM (recommended for the full desktop)
 
 Spin up a fresh **Debian 12** or **Ubuntu 24.04** VM, clone this repo, then:
 
@@ -36,8 +50,7 @@ sudo ./provision/provision.sh
 ```
 
 That installs the desktop theming + OSINT tools onto the running system. Log out
-and back in to get the XP look. This is the recommended path for learning —
-no ISO build required.
+and back in to get the XP look.
 
 ## Build a live ISO (advanced)
 
