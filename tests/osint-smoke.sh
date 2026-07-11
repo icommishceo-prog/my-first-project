@@ -16,8 +16,9 @@
 #   ./tests/osint-smoke.sh --report=DIR    # ...to a specific directory
 #   USERNAME=foo EMAIL=a@example.com DOMAIN=example.com ./tests/osint-smoke.sh
 #   NAME="Full Name" ./tests/osint-smoke.sh --report   # per-handle findings
+#   PHONE="+13125550123" ./tests/osint-smoke.sh --report  # phone OSINT (phoneinfoga)
 #
-# Override the fictional identity via env vars: USERNAME, EMAIL, DOMAIN, NAME.
+# Override the fictional identity via env vars: USERNAME, EMAIL, DOMAIN, NAME, PHONE.
 # Reports collect each tool's status, timing, and raw output; enable with
 # --report / --report=DIR or BLISS_REPORT_DIR=DIR.
 
@@ -169,10 +170,10 @@ finalize_report() {
   jq -s \
     --arg generated "$(now_utc)" \
     --arg name "${NAME:-}" --arg username "${USERNAME}" \
-    --arg email "${EMAIL}" --arg domain "${DOMAIN}" \
+    --arg email "${EMAIL}" --arg domain "${DOMAIN}" --arg phone "${PHONE:-}" \
     --argjson ok "${pass}" --argjson skipped "${skip}" --argjson failed "${fail}" \
     '{tool:"BlissOSINT smoke test", generated:$generated,
-      identity:{name:$name, username:$username, email:$email, domain:$domain},
+      identity:{name:$name, username:$username, email:$email, domain:$domain, phone:$phone},
       summary:{ok:$ok, skipped:$skipped, failed:$failed},
       results:.}' "${RECORDS}" > "${json}"
 
@@ -219,7 +220,7 @@ finalize_report() {
 <div class="meta">
   Generated $(now_utc) &middot;
   identity: ${NAME:+name=<b>$(printf '%s' "${NAME}" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g')</b>, }
-  username=<code>${USERNAME}</code>, domain=<code>${DOMAIN}</code><br>
+  username=<code>${USERNAME}</code>, domain=<code>${DOMAIN}</code>${PHONE:+, phone=<code>${PHONE}</code>}<br>
   <b>${pass}</b> ok &middot; <b>${skip}</b> skipped &middot; <b>${fail}</b> failed
 </div>
 <table>
@@ -250,6 +251,7 @@ main() {
   echo "  username: ${USERNAME}"
   echo "  email:    ${EMAIL}"
   echo "  domain:   ${DOMAIN}  (RFC 2606 reserved)"
+  [ -n "${PHONE:-}" ] && echo "  phone:    ${PHONE}"
   [ "${CHECK_ONLY}" -eq 1 ] && yellow "Mode: --check (offline; tool presence + metadata demo only)"
   [ -n "${REPORT_DIR}" ] && cyan "Reporting to: ${REPORT_DIR}"
   echo
@@ -282,6 +284,12 @@ main() {
   # Domain / DNS (example.com is safe to query)
   run_tool "Domain harvest"        theHarvester -d "${DOMAIN}" -b duckduckgo
   run_tool "DNS recon"             dnsrecon -d "${DOMAIN}"
+
+  # Phone OSINT (opt-in): runs when PHONE is set. In --check we still verify the
+  # tool is installed, using a Twilio magic test number as a harmless placeholder.
+  if [ -n "${PHONE:-}" ] || [ "${CHECK_ONLY}" -eq 1 ]; then
+    run_tool "Phone OSINT"         phoneinfoga scan -n "${PHONE:-+15005550006}"
+  fi
 
   # Offline metadata demo
   metadata_demo

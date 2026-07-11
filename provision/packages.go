@@ -6,4 +6,6 @@
 # distributed as a Go module (or via snap). The provisioner installs these only
 # when a Go toolchain is available; otherwise it prints a note and skips them.
 
-github.com/owasp-amass/amass/v4/...@master   # OWASP Amass (provides `amass`)
+github.com/owasp-amass/amass/v4/...@master         # OWASP Amass (provides `amass`)
+github.com/sundowndev/phoneinfoga/v2@latest        # PhoneInfoga (provides `phoneinfoga`)
+

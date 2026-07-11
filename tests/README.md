@@ -60,6 +60,22 @@ NAME="Ada Lovelace" ./tests/osint-smoke.sh
 ./tests/derive-persona.sh --emails "Ada Lovelace"
 ```
 
+### Phone numbers
+
+Set `PHONE=` (E.164 format) to run PhoneInfoga against a number — useful for
+checking a number that contacted **you** (e.g. a scam/spam text):
+
+```bash
+PHONE="+13125550123" ./tests/osint-smoke.sh --report
+# combine with email/username for a full picture of one sender:
+USERNAME=somehandle EMAIL=someone@example.com PHONE="+13125550123" \
+  ./tests/osint-smoke.sh --report
+```
+
+Only investigate numbers that contacted you or that you're authorized to check
+(see [`../docs/opsec.md`](../docs/opsec.md)). Scammers use spoofed/VoIP numbers,
+so expect limited results — the higher-value action is reporting the number.
+
 `derive-persona.sh` produces the usual patterns — `firstlast`, `first.last`,
 `first_last`, `flast`, `initials+last` (e.g. `ldstone`), etc. — deduplicated.
 It is pure offline string work and targets nobody; the enumeration step it feeds
@@ -77,6 +93,7 @@ authorized subjects only.
 | DNS recon | `dnsrecon` | yes |
 | Metadata extraction | `exiftool` | **no** (offline demo) |
 | Name → handle derivation | `derive-persona.sh` | **no** (offline, when `NAME=` set) |
+| Phone number recon | `phoneinfoga` | yes (when `PHONE=` set) |
 
 Each step **skips** (doesn't fail) if its tool isn't installed, and every live
 step is time-capped (`BLISS_SMOKE_TIMEOUT`, default 90s) so a slow source list
