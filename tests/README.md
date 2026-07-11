@@ -23,6 +23,28 @@ USERNAME=madeup_handle_42 EMAIL=nobody@example.com DOMAIN=example.org \
 ./tests/osint-smoke.sh --check
 ```
 
+### Saving reports (JSON + HTML)
+
+Add `--report` (or `--report=DIR`, or `BLISS_REPORT_DIR=DIR`) to save findings:
+
+```bash
+NAME="Ada Lovelace" ./tests/osint-smoke.sh --report            # -> reports/smoke-<ts>/
+./tests/osint-smoke.sh --report=out/run1                        # explicit dir
+```
+
+Each run writes:
+
+- **`report.json`** — machine-readable: identity, summary counts, and a
+  `results[]` array (per check: `label`, `bin`, `command`, `status`, `rc`,
+  `duration_s`, `raw`).
+- **`report.html`** — a self-contained, theme-aware table, one row per check,
+  linking to each tool's captured raw output.
+- **`raw/*.txt`** — the full stdout/stderr of every tool that ran.
+
+Reporting needs `jq` (a core dependency); if it's missing the run continues
+without reports. `reports/` is git-ignored — treat findings as sensitive and
+keep them off the repo (see [`../docs/opsec.md`](../docs/opsec.md)).
+
 ### Testing with a *name* (not just a handle)
 
 Username/email tools take handles, not full names. Set `NAME=` and the smoke

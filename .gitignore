@@ -10,6 +10,10 @@ theme/wallpaper/*.jpg
 # vagrant
 .vagrant/
 
+# smoke-test reports may contain findings — keep them out of the repo
+reports/
+_demo-report.html
+
 # python
 __pycache__/
 *.pyc
