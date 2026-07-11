@@ -23,6 +23,27 @@ USERNAME=madeup_handle_42 EMAIL=nobody@example.com DOMAIN=example.org \
 ./tests/osint-smoke.sh --check
 ```
 
+### Testing with a *name* (not just a handle)
+
+Username/email tools take handles, not full names. Set `NAME=` and the smoke
+test derives candidate handles from the name (via `derive-persona.sh`, offline)
+and enumerates each one:
+
+```bash
+# Derive handles from a name, then enumerate them (run only against fictional
+# or authorized identities — see ../docs/opsec.md):
+NAME="Ada Lovelace" ./tests/osint-smoke.sh
+
+# Just see the candidate handles/emails without running anything:
+./tests/derive-persona.sh --emails "Ada Lovelace"
+```
+
+`derive-persona.sh` produces the usual patterns — `firstlast`, `first.last`,
+`first_last`, `flast`, `initials+last` (e.g. `ldstone`), etc. — deduplicated.
+It is pure offline string work and targets nobody; the enumeration step it feeds
+is what actually touches the network, so keep that pointed at fictional or
+authorized subjects only.
+
 ### What it checks
 
 | Step | Tool | Needs network |
@@ -33,6 +54,7 @@ USERNAME=madeup_handle_42 EMAIL=nobody@example.com DOMAIN=example.org \
 | Domain harvest | `theHarvester` | yes |
 | DNS recon | `dnsrecon` | yes |
 | Metadata extraction | `exiftool` | **no** (offline demo) |
+| Name → handle derivation | `derive-persona.sh` | **no** (offline, when `NAME=` set) |
 
 Each step **skips** (doesn't fail) if its tool isn't installed, and every live
 step is time-capped (`BLISS_SMOKE_TIMEOUT`, default 90s) so a slow source list

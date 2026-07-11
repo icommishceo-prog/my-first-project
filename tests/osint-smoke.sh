@@ -110,9 +110,27 @@ main() {
   [ "${CHECK_ONLY}" -eq 1 ] && yellow "Mode: --check (offline; tool presence + metadata demo only)"
   echo
 
-  # Username enumeration
-  run_tool "Username search"       sherlock "${USERNAME}" --timeout 10 --print-found
-  run_tool "Username enumeration"  maigret  "${USERNAME}" --timeout 10
+  # Username enumeration. If NAME is set, derive candidate handles from the full
+  # name (offline) and enumerate each; otherwise use the single fictional handle.
+  if [ -n "${NAME:-}" ]; then
+    local deriver
+    deriver="$(dirname "${BASH_SOURCE[0]}")/derive-persona.sh"
+    cyan "== Deriving handles from name: ${NAME} =="
+    mapfile -t handles < <("${deriver}" "${NAME}" 2>/dev/null)
+    if [ "${#handles[@]}" -eq 0 ]; then
+      yellow "  could not derive handles; falling back to ${USERNAME}"
+      handles=("${USERNAME}")
+    else
+      echo "  candidates: ${handles[*]}"
+    fi
+    for h in "${handles[@]}"; do
+      run_tool "Username search [${h}]"      sherlock "${h}" --timeout 10 --print-found
+      run_tool "Username enumeration [${h}]" maigret  "${h}" --timeout 10
+    done
+  else
+    run_tool "Username search"       sherlock "${USERNAME}" --timeout 10 --print-found
+    run_tool "Username enumeration"  maigret  "${USERNAME}" --timeout 10
+  fi
 
   # Email
   run_tool "Email registration"    holehe   "${EMAIL}"
