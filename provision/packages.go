@@ -7,5 +7,7 @@
 # when a Go toolchain is available; otherwise it prints a note and skips them.
 
 github.com/owasp-amass/amass/v4/...@master         # OWASP Amass (provides `amass`)
-github.com/sundowndev/phoneinfoga/v2@latest        # PhoneInfoga (provides `phoneinfoga`)
+
+# PhoneInfoga is installed by provision/install-phoneinfoga.sh (prebuilt binary
+# with a `go install` fallback), not from this list.
 

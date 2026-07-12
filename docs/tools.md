@@ -39,12 +39,16 @@ by what they do. Every one of these works with **public** data — read
 
 | Tool | Purpose | Install source |
 |------|---------|----------------|
-| PhoneInfoga | Phone-number recon (format, carrier, line type, footprint) | go (binary/Docker also available) |
+| PhoneInfoga | Phone-number recon (format, carrier, line type, footprint) | prebuilt binary (`provision/install-phoneinfoga.sh`) |
 
-`go install` builds PhoneInfoga from source; if that fails, the
-[official binary or Docker image](https://sundowndev.github.io/phoneinfoga/getting-started/install/)
-works too. Some scanners (numverify, Google CSE) need API keys — the local
-scanner runs without them. Scan with `phoneinfoga scan -n "+13125550123"`.
+Installed from the official GitHub release binary by
+[`provision/install-phoneinfoga.sh`](../provision/install-phoneinfoga.sh) (called
+by the provisioner, so the Docker image and VM both get it). `go install` is
+deliberately **not** used — PhoneInfoga's web client is only embedded in release
+builds, so a source build fails with `pattern client/dist/*: no matching files`.
+Pin a version with `PHONEINFOGA_VERSION=v2.11.0`. Some scanners (numverify,
+Google CSE) need API keys — the local scanner runs without them. Scan with
+`phoneinfoga scan -n "+13125550123"`.
 
 ## Metadata / files / images
 

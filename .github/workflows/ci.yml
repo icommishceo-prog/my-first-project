@@ -19,12 +19,12 @@ jobs:
 
       - name: Shell syntax check
         run: |
-          for f in provision/provision.sh theme/install-theme.sh build/build.sh tests/osint-smoke.sh tests/derive-persona.sh; do
+          for f in provision/provision.sh provision/install-phoneinfoga.sh theme/install-theme.sh build/build.sh tests/osint-smoke.sh tests/derive-persona.sh; do
             bash -n "$f"
           done
 
       - name: ShellCheck
-        run: shellcheck provision/provision.sh theme/install-theme.sh build/build.sh tests/osint-smoke.sh tests/derive-persona.sh
+        run: shellcheck provision/provision.sh provision/install-phoneinfoga.sh theme/install-theme.sh build/build.sh tests/osint-smoke.sh tests/derive-persona.sh
 
       - name: Validate XFCE config XML
         run: |

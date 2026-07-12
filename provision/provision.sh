@@ -106,6 +106,15 @@ install_go_tools() {
   done
 }
 
+install_phoneinfoga() {
+  # Phone-OSINT tool: dedicated installer (prebuilt binary, go fallback).
+  local script="${PROVISION_DIR}/install-phoneinfoga.sh"
+  if [ -x "${script}" ]; then
+    log "Installing PhoneInfoga..."
+    "${script}" /usr/local/bin || warn "PhoneInfoga install reported a problem (continuing)."
+  fi
+}
+
 apply_theme() {
   if [ "${HEADLESS}" = "1" ]; then
     log "Headless mode: skipping desktop theming."
@@ -123,6 +132,7 @@ main() {
   install_apt_packages
   install_pipx_tools
   install_go_tools
+  install_phoneinfoga
   apply_theme
   if [ "${HEADLESS}" = "1" ]; then
     log "Headless provision done: OSINT toolkit installed (no desktop)."

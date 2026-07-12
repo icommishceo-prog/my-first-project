@@ -22,7 +22,7 @@ WORKDIR /opt/bliss-osint
 COPY . .
 
 # Headless provision: core + OSINT apt packages, pipx tools, no desktop/theming.
-RUN chmod +x provision/provision.sh tests/osint-smoke.sh \
+RUN chmod +x provision/provision.sh provision/install-phoneinfoga.sh tests/osint-smoke.sh \
     && BLISS_HEADLESS=1 ./provision/provision.sh \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
