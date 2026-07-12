@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint & validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install validators
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck libxml2-utils jq
+
+      - name: Shell syntax check
+        run: |
+          for f in provision/provision.sh provision/install-phoneinfoga.sh theme/install-theme.sh build/build.sh tests/osint-smoke.sh tests/derive-persona.sh; do
+            bash -n "$f"
+          done
+
+      - name: ShellCheck
+        run: shellcheck provision/provision.sh provision/install-phoneinfoga.sh theme/install-theme.sh build/build.sh tests/osint-smoke.sh tests/derive-persona.sh
+
+      - name: Validate XFCE config XML
+        run: |
+          find theme/xfce4 -name '*.xml' -print0 \
+            | xargs -0 -r -n1 xmllint --noout
+
+      - name: Validate Firefox policies JSON
+        run: jq empty theme/firefox/policies.json
+
+      - name: Sanity-check package lists are non-empty
+        run: |
+          for f in provision/packages.apt provision/packages.desktop.apt \
+                   provision/packages.pipx provision/packages.go; do
+            n=$(sed -e 's/#.*$//' -e 's/[[:space:]]*$//' "$f" | grep -cv '^[[:space:]]*$')
+            echo "$f: $n entries"
+            test "$n" -gt 0
+          done
+
+  toolkit-smoke:
+    name: Toolkit build & smoke (headless Docker)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Builds the real install path (BLISS_HEADLESS=1 provision.sh) inside the
+      # image, then runs the offline smoke test. This is the first CI step that
+      # actually installs and launches the OSINT tools -- proving the apt/pipx
+      # package names resolve, not just that the config is well-formed.
+      - name: Build headless toolkit image
+        run: docker build -t bliss-osint -f docker/Dockerfile .
+
+      - name: Smoke test (offline --check)
+        run: docker run --rm bliss-osint
+
+  iso-config:
+    name: live-build config validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install live-build
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y live-build
+
+      - name: Validate live-build config (no full build)
+        run: BLISS_CONFIG_ONLY=1 ./build/build.sh
+
+# NOTE: The full ISO build (sudo ./build/build.sh) is intentionally NOT run in
+# CI -- it needs privileged loop devices and downloads several GB. Build it
+# locally on a Debian host. CI only validates that the live-build config is
+# well-formed so broken flags are caught early.

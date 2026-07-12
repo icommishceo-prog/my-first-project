@@ -1,0 +1,50 @@
+{
+  "policies": {
+    "DisableTelemetry": true,
+    "DisableFirefoxStudies": true,
+    "DisablePocket": true,
+    "DisableFormHistory": true,
+    "DontCheckDefaultBrowser": true,
+    "NoDefaultBookmarks": true,
+    "OfferToSaveLogins": false,
+    "FirefoxHome": {
+      "Search": true,
+      "TopSites": false,
+      "SponsoredTopSites": false,
+      "Highlights": false,
+      "Pocket": false,
+      "SponsoredPocket": false,
+      "Snippets": false
+    },
+    "UserMessaging": {
+      "WhatsNew": false,
+      "ExtensionRecommendations": false,
+      "SkipOnboarding": true
+    },
+    "Bookmarks": [
+      { "Title": "OSINT Framework", "URL": "https://osintframework.com/", "Placement": "toolbar", "Folder": "OSINT" },
+      { "Title": "Bellingcat Toolkit", "URL": "https://bellingcat.gitbook.io/toolkit", "Placement": "toolbar", "Folder": "OSINT" },
+
+      { "Title": "DuckDuckGo", "URL": "https://duckduckgo.com/", "Placement": "toolbar", "Folder": "OSINT/Search" },
+      { "Title": "Yandex", "URL": "https://yandex.com/", "Placement": "toolbar", "Folder": "OSINT/Search" },
+      { "Title": "Bing", "URL": "https://www.bing.com/", "Placement": "toolbar", "Folder": "OSINT/Search" },
+
+      { "Title": "Wayback Machine", "URL": "https://web.archive.org/", "Placement": "toolbar", "Folder": "OSINT/Archives" },
+      { "Title": "archive.today", "URL": "https://archive.ph/", "Placement": "toolbar", "Folder": "OSINT/Archives" },
+
+      { "Title": "Have I Been Pwned", "URL": "https://haveibeenpwned.com/", "Placement": "toolbar", "Folder": "OSINT/People & Email" },
+      { "Title": "WhatsMyName", "URL": "https://whatsmyname.app/", "Placement": "toolbar", "Folder": "OSINT/People & Email" },
+
+      { "Title": "TinEye Reverse Image", "URL": "https://tineye.com/", "Placement": "toolbar", "Folder": "OSINT/Images" },
+      { "Title": "Yandex Images", "URL": "https://yandex.com/images/", "Placement": "toolbar", "Folder": "OSINT/Images" },
+
+      { "Title": "crt.sh (cert transparency)", "URL": "https://crt.sh/", "Placement": "toolbar", "Folder": "OSINT/Domains & Infra" },
+      { "Title": "DNSdumpster", "URL": "https://dnsdumpster.com/", "Placement": "toolbar", "Folder": "OSINT/Domains & Infra" },
+      { "Title": "ViewDNS.info", "URL": "https://viewdns.info/", "Placement": "toolbar", "Folder": "OSINT/Domains & Infra" },
+      { "Title": "Shodan", "URL": "https://www.shodan.io/", "Placement": "toolbar", "Folder": "OSINT/Domains & Infra" },
+      { "Title": "Censys Search", "URL": "https://search.censys.io/", "Placement": "toolbar", "Folder": "OSINT/Domains & Infra" },
+
+      { "Title": "OpenStreetMap", "URL": "https://www.openstreetmap.org/", "Placement": "toolbar", "Folder": "OSINT/Geo" }
+    ]
+  }
+}

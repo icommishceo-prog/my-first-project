@@ -1,0 +1,14 @@
+# Python OSINT tools installed via pipx (isolated venvs, no system pollution).
+# Format: <pipx-spec>   # optional comment
+# Lines starting with '#' and blank lines are ignored.
+#
+# These are NOT packaged in Debian, so pipx is the clean way to get them.
+
+theHarvester           # emails/subdomains/hosts/names from public sources
+recon-ng               # modular web recon framework
+sherlock-project       # username search across social networks (provides `sherlock`)
+maigret                # username enumeration + reporting
+holehe                 # email-to-registered-sites checker
+spiderfoot             # automated OSINT collection with web UI
+photon                 # OSINT-focused web crawler
+metagoofil             # public-document metadata harvester
